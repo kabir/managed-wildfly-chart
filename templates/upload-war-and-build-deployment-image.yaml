@@ -1,0 +1,56 @@
+########################################################################################################################
+# Takes a war uploaded by the user, and puts it into an image based on ubi8.
+# The resulting image is tagged and pushed to <app-name>-deployment:latest
+########################################################################################################################
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: ubi-minimal
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - annotations:
+            openshift.io/imported-from: registry.access.redhat.com/ubi8/ubi-minimal
+          from:
+            kind: DockerImage
+            name: registry.access.redhat.com/ubi8/ubi-minimal
+          generation: null
+          importPolicy: {}
+          name: latest
+          referencePolicy:
+            type: ""
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}-deployment
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: {{ .Values.applicationName }}-deployment-build
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: {{ .Values.applicationName }}-deployment:latest
+      postCommit: {}
+      resources: {}
+      source:
+        type: Binary
+        binary:
+          asFile: ROOT.war
+        dockerfile: |-
+          FROM registry.access.redhat.com/ubi8/ubi-minimal
+          COPY *.war /tmp/artifacts/ROOT.war
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ubi-minimal:latest
+        type: Docker

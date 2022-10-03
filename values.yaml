@@ -1,0 +1,8 @@
+# Default values for managed-wildfly-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+applicationName: kabir-test
+applicationNamespace: kkhan1-dev
