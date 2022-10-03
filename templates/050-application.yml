@@ -1,0 +1,101 @@
+########################################################################################################################
+# Copies the war from {{ .Values.applicationName }}-deployment:latest into the provisioned server in an image
+# based on <app-name>-wildfly-runtime:latest.
+# The resulting image is tagged and pushed to <app-name>-wildfly-runtime:latest
+########################################################################################################################
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        image.openshift.io/triggers: |-
+          [
+            {
+              "from":{
+                "kind":"ImageStreamTag",
+                "name":"{{ .Values.applicationName }}:latest"
+              },
+              "fieldPath":"spec.template.spec.containers[0].image"
+            }
+          ]
+      name: {{ .Values.applicationName }}
+      namespace: {{ .Values.applicationNamespace }}
+    spec:
+      replicas: {{ .Values.replicaCount }}
+      selector:
+        matchLabels:
+          app: {{ .Values.applicationName }}
+      strategy: { }
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.applicationName }}
+        spec:
+          containers:
+            - name: {{ .Values.applicationName }}
+              image: {{ .Values.applicationName }}:latest
+              imagePullPolicy: Always
+              # restartPolicy: Always
+              # terminationGracePeriodSeconds: 30
+              # dnsPolicy: ClusterFirst
+              resources: { }
+              env:
+                - name: JGROUPS_PING_PROTOCOL
+                  value: dns.DNS_PING
+                - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+                  value: '8888'
+                - name: ENABLE_GENERATE_DEFAULT_DATASOURCE
+                  value: 'false'
+                - name: SERVER_PUBLIC_BIND_ADDRESS
+                  value: 0.0.0.0
+              ports:
+                - name: jolokia
+                  containerPort: 8778
+                  protocol: TCP
+                - name: http
+                  containerPort: 8080
+                  protocol: TCP
+                - name: ping
+                  containerPort: 8888
+                  protocol: TCP
+                - name: admin
+                  containerPort: 9990
+                  protocol: TCP
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: {{ .Values.applicationName }}
+      namespace: {{ .Values.applicationNamespace }}
+      labels:
+        app: {{ .Values.applicationName }}
+    spec:
+      ipFamilies:
+        - IPv4
+      ports:
+        - protocol: TCP
+          port: 8080
+          targetPort: 8080
+      internalTrafficPolicy: Cluster
+      type: ClusterIP
+      sessionAffinity: None
+      ipFamilyPolicy: SingleStack
+      selector:
+        app: {{ .Values.applicationName }}
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: {{ .Values.applicationName }}
+      namespace: {{ .Values.applicationNamespace }}
+      labels:
+        app: {{ .Values.applicationName }}
+    spec:
+      to:
+        kind: Service
+        name: {{ .Values.applicationName }}
+        weight: 100
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
