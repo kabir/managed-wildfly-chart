@@ -1,0 +1,81 @@
+########################################################################################################################
+# Provisions a server using the information in the war META-INF/server-config.xml in the <app-name>-deployment:latest
+# image.
+# The resulting image is based on the managed server builder image, and is tagged and pushed to
+#  <app-name>-provisioned-server:latest
+########################################################################################################################
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}-wildfly-managed-server
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - from:
+            kind: DockerImage
+            name: {{ .Values.managedServerImage }}
+          generation: null
+          importPolicy: { }
+          name: latest
+          referencePolicy:
+            type: ""
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}-provisioned-server
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: {{ .Values.applicationName }}-provisioned-server-build
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: {{ .Values.applicationName }}-provisioned-server:latest
+      postCommit: { }
+      resources: { }
+      source:
+        images:
+          - from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-deployment:latest
+              namespace: {{ .Values.applicationNamespace }}
+            paths:
+              - destinationDir: artifacts
+                sourcePath: /tmp/artifacts/ROOT.war
+        contextDir: artifacts
+        type: Image
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: {{ .Values.applicationName }}-wildfly-managed-server:latest
+          env:
+            - name: MANAGED_SERVER_SERVER_FEATURE_PACK_GA
+              value: org.wildfly:wildfly-galleon-pack
+            - name: MANAGED_SERVER_SERVER_FEATURE_PACK_VERSION
+              value: 27.0.0.Alpha5
+            - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_GA
+              value: org.wildfly.cloud:wildfly-cloud-galleon-pack
+            - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_VERSION
+              value: 2.0.0.Alpha4
+            - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_GA
+              value: org.wildfly:wildfly-datasources-galleon-pack
+            - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_VERSION
+              value: 2.2.5.Final
+        type: Source
+      triggers:
+        - imageChange:
+            from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-deployment:latest
+              namespace: {{ .Values.applicationNamespace }}
+          type: ImageChange

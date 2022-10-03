@@ -8,7 +8,7 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: ubi-minimal
+      name: {{ .Values.applicationName }}-ubi-minimal
     spec:
       lookupPolicy:
         local: false
@@ -52,5 +52,5 @@ items:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: ubi-minimal:latest
+            name: {{ .Values.applicationName }}-ubi-minimal:latest
         type: Docker

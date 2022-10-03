@@ -6,3 +6,4 @@ replicaCount: 2
 
 applicationName: kabir-test
 applicationNamespace: kkhan1-dev
+managedServerImage: quay.io/kabirk/wildfly-managed-server-jdk17:latest
