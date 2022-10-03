@@ -1,0 +1,63 @@
+########################################################################################################################
+# Copies the war from {{ .Values.applicationName }}-deployment:latest into the provisioned server in an image
+# based on <app-name>-wildfly-runtime:latest.
+# The resulting image is tagged and pushed to <app-name>-wildfly-runtime:latest
+########################################################################################################################
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: {{ .Values.applicationName }}-build
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: {{ .Values.applicationName }}:latest
+      postCommit: { }
+      resources: { }
+      source:
+        images:
+          - from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-deployment:latest
+              namespace: {{ .Values.applicationNamespace }}
+            paths:
+              - destinationDir: artifacts
+                sourcePath: /tmp/artifacts/ROOT.war
+        contextDir: artifacts
+        dockerfile: |-
+          # FROM gets overwritten by the dockerStrategy
+          FROM <app-name>-runtime-server:latest        
+          COPY ROOT.war $JBOSS_HOME/standalone/deployments/ROOT.war
+          # Workaround: For some reason 'COPY -–chown=jboss:root ...' does not work here, so change permissions manually 
+          USER root
+          RUN chown jboss:root $JBOSS_HOME/standalone/deployments/ROOT.war
+          USER jboss
+          # Workaround - END
+          RUN chmod -R ug+rwX $JBOSS_HOME
+        type: Docker
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: {{ .Values.applicationName }}-runtime-server:latest
+        type: Docker
+      triggers:
+        - imageChange:
+            from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-runtime-server:latest
+              namespace: {{ .Values.applicationNamespace }}
+          type: ImageChange
