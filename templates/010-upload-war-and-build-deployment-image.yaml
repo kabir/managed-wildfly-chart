@@ -8,7 +8,7 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-ubi-minimal
+      name: {{ .Release.Name }}-ubi-minimal
     spec:
       lookupPolicy:
         local: false
@@ -26,19 +26,19 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-deployment
+      name: {{ .Release.Name }}-deployment
     spec:
       lookupPolicy:
         local: false
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: {{ .Values.applicationName }}-deployment-build
+      name: {{ .Release.Name }}-deployment-build
     spec:
       output:
         to:
           kind: ImageStreamTag
-          name: {{ .Values.applicationName }}-deployment:latest
+          name: {{ .Release.Name }}-deployment:latest
       postCommit: {}
       resources: {}
       source:
@@ -52,5 +52,5 @@ items:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: {{ .Values.applicationName }}-ubi-minimal:latest
+            name: {{ .Release.Name }}-ubi-minimal:latest
         type: Docker

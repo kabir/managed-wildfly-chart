@@ -10,12 +10,12 @@ items:
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: {{ .Values.applicationName }}-update-build
+      name: {{ .Release.Name }}-update-build
     spec:
       output:
         to:
           kind: ImageStreamTag
-          name: {{ .Values.applicationName }}:latest
+          name: {{ .Release.Name }}:latest
       postCommit: {}
       resources: {}
       source:
@@ -36,5 +36,5 @@ items:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: {{ .Values.applicationName }}-runtime-server:latest
+            name: {{ .Release.Name }}-runtime-server:latest
         type: Docker

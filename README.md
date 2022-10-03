@@ -13,8 +13,9 @@ Then we install the helm chart choosing a name (in this case `kabir-test`) for t
 ```shell
 helm install kabir-test ./managed-wildfly-chart-0.1.0.tgz
 ```
-This will create a bunch of ImageStreams and  BuildConfigs prefixed with `kabir-test-`, as well as a Service, Route and
-Deployment all called `kabir-test`.
+This will create a bunch of ImageStreams and  BuildConfigs prefixed with `kabir-test-`, as well as a Service, Route 
+and Deployment all called `kabir-test`. The namespace of the resources become that of the currently active OpenShift
+project.
 
 # Create a new application
 Now we can deploy a war containing a `META-INF/server-config.xml` such as this [test application](https://github.com/kabir/managed-server-builder).

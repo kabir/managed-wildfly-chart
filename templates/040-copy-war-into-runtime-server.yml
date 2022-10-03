@@ -1,5 +1,5 @@
 ########################################################################################################################
-# Copies the war from {{ .Values.applicationName }}-deployment:latest into the provisioned server in an image
+# Copies the war from {{ .Release.Name }}-deployment:latest into the provisioned server in an image
 # based on <app-name>-wildfly-runtime:latest.
 # The resulting image is tagged and pushed to <app-name>-wildfly-runtime:latest
 ########################################################################################################################
@@ -9,7 +9,7 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}
+      name: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -18,21 +18,21 @@ items:
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: {{ .Values.applicationName }}-build
+      name: {{ .Release.Name }}-build
     spec:
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: {{ .Values.applicationName }}:latest
+          name: {{ .Release.Name }}:latest
       postCommit: { }
       resources: { }
       source:
         images:
           - from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-deployment:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-deployment:latest
+              namespace: {{ .Release.Namespace }}
             paths:
               - destinationDir: artifacts
                 sourcePath: /tmp/artifacts/ROOT.war
@@ -52,12 +52,12 @@ items:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: {{ .Values.applicationName }}-runtime-server:latest
+            name: {{ .Release.Name }}-runtime-server:latest
         type: Docker
       triggers:
         - imageChange:
             from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-runtime-server:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-runtime-server:latest
+              namespace: {{ .Release.Namespace }}
           type: ImageChange

@@ -1,5 +1,5 @@
 ########################################################################################################################
-# Copies the war from {{ .Values.applicationName }}-deployment:latest into the provisioned server in an image
+# Copies the war from {{ .Release.Name }}-deployment:latest into the provisioned server in an image
 # based on <app-name>-wildfly-runtime:latest.
 # The resulting image is tagged and pushed to <app-name>-wildfly-runtime:latest
 ########################################################################################################################
@@ -15,27 +15,27 @@ items:
             {
               "from":{
                 "kind":"ImageStreamTag",
-                "name":"{{ .Values.applicationName }}:latest"
+                "name":"{{ .Release.Name }}:latest"
               },
               "fieldPath":"spec.template.spec.containers[0].image"
             }
           ]
-      name: {{ .Values.applicationName }}
-      namespace: {{ .Values.applicationNamespace }}
+      name: {{ .Release.Name }}
+      namespace: {{ .Release.Namespace }}
     spec:
       replicas: {{ .Values.replicaCount }}
       selector:
         matchLabels:
-          app: {{ .Values.applicationName }}
+          app: {{ .Release.Name }}
       strategy: { }
       template:
         metadata:
           labels:
-            app: {{ .Values.applicationName }}
+            app: {{ .Release.Name }}
         spec:
           containers:
-            - name: {{ .Values.applicationName }}
-              image: {{ .Values.applicationName }}:latest
+            - name: {{ .Release.Name }}
+              image: {{ .Release.Name }}:latest
               imagePullPolicy: Always
               # restartPolicy: Always
               # terminationGracePeriodSeconds: 30
@@ -66,10 +66,10 @@ items:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: {{ .Values.applicationName }}
-      namespace: {{ .Values.applicationNamespace }}
+      name: {{ .Release.Name }}
+      namespace: {{ .Release.Namespace }}
       labels:
-        app: {{ .Values.applicationName }}
+        app: {{ .Release.Name }}
     spec:
       ipFamilies:
         - IPv4
@@ -82,18 +82,18 @@ items:
       sessionAffinity: None
       ipFamilyPolicy: SingleStack
       selector:
-        app: {{ .Values.applicationName }}
+        app: {{ .Release.Name }}
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: {{ .Values.applicationName }}
-      namespace: {{ .Values.applicationNamespace }}
+      name: {{ .Release.Name }}
+      namespace: {{ .Release.Namespace }}
       labels:
-        app: {{ .Values.applicationName }}
+        app: {{ .Release.Name }}
     spec:
       to:
         kind: Service
-        name: {{ .Values.applicationName }}
+        name: {{ .Release.Name }}
         weight: 100
       tls:
         termination: edge

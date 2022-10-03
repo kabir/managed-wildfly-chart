@@ -10,7 +10,7 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-wildfly-managed-server
+      name: {{ .Release.Name }}-wildfly-managed-server
     spec:
       lookupPolicy:
         local: false
@@ -26,28 +26,28 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-provisioned-server
+      name: {{ .Release.Name }}-provisioned-server
     spec:
       lookupPolicy:
         local: false
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: {{ .Values.applicationName }}-provisioned-server-build
+      name: {{ .Release.Name }}-provisioned-server-build
     spec:
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: {{ .Values.applicationName }}-provisioned-server:latest
+          name: {{ .Release.Name }}-provisioned-server:latest
       postCommit: { }
       resources: { }
       source:
         images:
           - from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-deployment:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-deployment:latest
+              namespace: {{ .Release.Namespace }}
             paths:
               - destinationDir: artifacts
                 sourcePath: /tmp/artifacts/ROOT.war
@@ -57,7 +57,7 @@ items:
         sourceStrategy:
           from:
             kind: ImageStreamTag
-            name: {{ .Values.applicationName }}-wildfly-managed-server:latest
+            name: {{ .Release.Name }}-wildfly-managed-server:latest
           env:
             - name: MANAGED_SERVER_SERVER_FEATURE_PACK_GA
               value: org.wildfly:wildfly-galleon-pack
@@ -76,6 +76,6 @@ items:
         - imageChange:
             from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-deployment:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-deployment:latest
+              namespace: {{ .Release.Namespace }}
           type: ImageChange

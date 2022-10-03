@@ -9,7 +9,7 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-wildfly-runtime
+      name: {{ .Release.Name }}-wildfly-runtime
     spec:
       lookupPolicy:
         local: false
@@ -25,28 +25,28 @@ items:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
-      name: {{ .Values.applicationName }}-runtime-server
+      name: {{ .Release.Name }}-runtime-server
     spec:
       lookupPolicy:
         local: false
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: {{ .Values.applicationName }}-runtime-build
+      name: {{ .Release.Name }}-runtime-build
     spec:
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: {{ .Values.applicationName }}-runtime-server:latest
+          name: {{ .Release.Name }}-runtime-server:latest
       postCommit: { }
       resources: { }
       source:
         images:
           - from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-provisioned-server:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-provisioned-server:latest
+              namespace: {{ .Release.Namespace }}
             paths:
               - destinationDir: artifacts/server
                 sourcePath: /opt/server
@@ -61,12 +61,12 @@ items:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: {{ .Values.applicationName }}-wildfly-runtime:latest
+            name: {{ .Release.Name }}-wildfly-runtime:latest
         type: Docker
       triggers:
         - imageChange:
             from:
               kind: ImageStreamTag
-              name: {{ .Values.applicationName }}-provisioned-server:latest
-              namespace: {{ .Values.applicationNamespace }}
+              name: {{ .Release.Name }}-provisioned-server:latest
+              namespace: {{ .Release.Namespace }}
           type: ImageChange
