@@ -1,0 +1,72 @@
+########################################################################################################################
+# Copies the provisioned server from the <app-name>-provisioned-server:latest image to a new image based on
+# the WildFly runtime image
+# The resulting image is tagged and pushed to <app-name>-wildfly-runtime:latest
+########################################################################################################################
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}-wildfly-runtime
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - from:
+            kind: DockerImage
+            name: {{ .Values.runtimeImage }}
+          generation: null
+          importPolicy: { }
+          name: latest
+          referencePolicy:
+            type: ""
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: {{ .Values.applicationName }}-runtime-server
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: {{ .Values.applicationName }}-runtime-build
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: {{ .Values.applicationName }}-runtime-server:latest
+      postCommit: { }
+      resources: { }
+      source:
+        images:
+          - from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-provisioned-server:latest
+              namespace: {{ .Values.applicationNamespace }}
+            paths:
+              - destinationDir: artifacts/server
+                sourcePath: /opt/server
+        contextDir: artifacts
+        dockerfile: |-
+          # FROM gets overridden by the value in the dockerStrategy
+          FROM wildfly/wildfly-runtime:latest
+          COPY --chown=jboss:root server/* $JBOSS_HOME
+          RUN chmod -R ug+rwX $JBOSS_HOME
+        type: Docker
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: {{ .Values.applicationName }}-wildfly-runtime:latest
+        type: Docker
+      triggers:
+        - imageChange:
+            from:
+              kind: ImageStreamTag
+              name: {{ .Values.applicationName }}-provisioned-server:latest
+              namespace: {{ .Values.applicationNamespace }}
+          type: ImageChange
