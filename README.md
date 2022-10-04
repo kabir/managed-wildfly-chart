@@ -18,7 +18,7 @@ and Deployment all called `kabir-test`. The namespace of the resources become th
 project.
 
 # Create a new application
-Now we can deploy a war containing a `META-INF/server-config.xml` such as this [test application](https://github.com/kabir/managed-server-builder).
+Now we can deploy a war containing a `META-INF/server-config.xml` such as this [test application](https://github.com/kabir/managed-wildfly-deployments/tree/main/simple).
 (You need to clone that repository and build it).
 
 Now we start a build which takes the uploaded war as input.
