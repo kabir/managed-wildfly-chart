@@ -9,7 +9,7 @@ replicaCount: 2
 managedServerImage: quay.io/kabirk/wildfly-managed-server-jdk17:latest
 
 # The WildFly runtime inmage
-runtimeImage: quay.io/wildfly/wildfly-runtime-jdk17:latest
+runtimeImage: quay.io/kabirk/wildfly-runtime-jdk17:latest
 
 # Inputs to the managed server builder image
 serverFeaturePackGA: org.wildfly:wildfly-galleon-pack
