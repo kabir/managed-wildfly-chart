@@ -66,17 +66,17 @@ items:
             name: {{ .Release.Name }}-wildfly-managed-server:latest
           env:
             - name: MANAGED_SERVER_SERVER_FEATURE_PACK_GA
-              value: org.wildfly:wildfly-galleon-pack
+              value: {{ .Values.serverFeaturePackGA }}
             - name: MANAGED_SERVER_SERVER_FEATURE_PACK_VERSION
-              value: 27.0.0.Alpha5
+              value: {{ .Values.serverFeaturePackVersion }}
             - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_GA
-              value: org.wildfly.cloud:wildfly-cloud-galleon-pack
+              value: {{ .Values.cloudFeaturePackGA }}
             - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_VERSION
-              value: 2.0.0.Alpha4
+              value: {{ .Values.cloudFeaturePackVersion }}
             - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_GA
-              value: org.wildfly:wildfly-datasources-galleon-pack
+              value: {{ .Values.datasourcesFeaturePackGA }}
             - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_VERSION
-              value: 2.2.5.Final
+              value: {{ .Values.datasourcesFeaturePackVersion }}
         type: Source
       triggers:
         - imageChange:

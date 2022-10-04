@@ -2,6 +2,19 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Default replicas to be used for the application pods
 replicaCount: 2
+
+# The managed server builder image to use
 managedServerImage: quay.io/kabirk/wildfly-managed-server-jdk17:latest
+
+# The WildFly runtime inmage
 runtimeImage: quay.io/wildfly/wildfly-runtime-jdk17:latest
+
+# Inputs to the managed server builder image
+serverFeaturePackGA: org.wildfly:wildfly-galleon-pack
+serverFeaturePackVersion: 27.0.0.Alpha5
+cloudFeaturePackGA: org.wildfly.cloud:wildfly-cloud-galleon-pack
+cloudFeaturePackVersion: 2.0.0.Alpha4
+datasourcesFeaturePackGA: org.wildfly:wildfly-datasources-galleon-pack
+datasourcesFeaturePackVersion: 2.2.5.Final
