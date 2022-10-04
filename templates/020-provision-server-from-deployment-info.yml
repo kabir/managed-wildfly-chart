@@ -11,6 +11,8 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-wildfly-managed-server
+      labels:
+        app: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -27,6 +29,8 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-provisioned-server
+      labels:
+        app: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -34,6 +38,8 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-provisioned-server-build
+      labels:
+        app: {{ .Release.Name }}
     spec:
       nodeSelector: null
       output:

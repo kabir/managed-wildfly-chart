@@ -10,6 +10,8 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-wildfly-runtime
+      labels:
+        app: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -26,6 +28,8 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-runtime-server
+      labels:
+        app: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -33,6 +37,8 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-runtime-build
+      labels:
+        app: {{ .Release.Name }}
     spec:
       nodeSelector: null
       output:

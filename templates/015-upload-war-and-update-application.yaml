@@ -11,6 +11,8 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-update-build
+      labels:
+        app: {{ .Release.Name }}
     spec:
       output:
         to:

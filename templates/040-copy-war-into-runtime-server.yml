@@ -10,6 +10,8 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}
+      labels:
+        app: {{ .Release.Name }}
     spec:
       lookupPolicy:
         local: false
@@ -19,6 +21,8 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-build
+      labels:
+        app: {{ .Release.Name }}
     spec:
       nodeSelector: null
       output:
