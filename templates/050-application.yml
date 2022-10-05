@@ -52,6 +52,9 @@ items:
                   value: 'false'
                 - name: SERVER_PUBLIC_BIND_ADDRESS
                   value: 0.0.0.0
+                {{- if .Values.deploy.env }}
+                {{- tpl (toYaml .Values.deploy.env) . | nindent 16 }}
+                {{- end }}
               ports:
                 - name: jolokia
                   containerPort: 8778
@@ -65,6 +68,7 @@ items:
                 - name: admin
                   containerPort: 9990
                   protocol: TCP
+
   - kind: Service
     apiVersion: v1
     metadata:

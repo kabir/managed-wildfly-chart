@@ -17,4 +17,7 @@ serverFeaturePackVersion: 27.0.0.Alpha5
 cloudFeaturePackGA: org.wildfly.cloud:wildfly-cloud-galleon-pack
 cloudFeaturePackVersion: 2.0.0.Alpha4
 datasourcesFeaturePackGA: org.wildfly:wildfly-datasources-galleon-pack
-datasourcesFeaturePackVersion: 2.2.5.Final
+datasourcesFeaturePackVersion: 3.0.0.Beta1
+
+deploy:
+  env:
