@@ -25,7 +25,7 @@ items:
       labels:
         app: {{ .Release.Name }}
     spec:
-      replicas: {{ .Values.replicaCount }}
+      replicas: {{ .Values.deploy.replicas }}
       selector:
         matchLabels:
           app: {{ .Release.Name }}
@@ -39,22 +39,6 @@ items:
             - name: {{ .Release.Name }}
               image: {{ .Release.Name }}:latest
               imagePullPolicy: Always
-              # restartPolicy: Always
-              # terminationGracePeriodSeconds: 30
-              # dnsPolicy: ClusterFirst
-              resources: { }
-              env:
-                - name: JGROUPS_PING_PROTOCOL
-                  value: dns.DNS_PING
-                - name: OPENSHIFT_DNS_PING_SERVICE_PORT
-                  value: '8888'
-                - name: ENABLE_GENERATE_DEFAULT_DATASOURCE
-                  value: 'false'
-                - name: SERVER_PUBLIC_BIND_ADDRESS
-                  value: 0.0.0.0
-                {{- if .Values.deploy.env }}
-                {{- tpl (toYaml .Values.deploy.env) . | nindent 16 }}
-                {{- end }}
               ports:
                 - name: jolokia
                   containerPort: 8778
@@ -68,6 +52,56 @@ items:
                 - name: admin
                   containerPort: 9990
                   protocol: TCP
+                {{- if .Values.deploy.tls.enabled }}
+                - name: https
+                  containerPort: 8443
+                  protocol: TCP
+                {{- end }}
+              {{- if .Values.deploy.resources }}
+              resources:
+                {{- toYaml .Values.deploy.resources | nindent 16 }}
+              {{- end }}
+              {{- if .Values.deploy.livenessProbe }}
+              livenessProbe:
+                {{- tpl (toYaml .Values.deploy.livenessProbe) . | nindent 16 }}
+              {{- end }}
+              {{- if .Values.deploy.readinessProbe }}
+              readinessProbe:
+                {{- tpl (toYaml .Values.deploy.readinessProbe) . | nindent 16 }}
+              {{- end }}
+              {{- if .Values.deploy.startupProbe }}
+              startupProbe:
+                {{- tpl (toYaml .Values.deploy.startupProbe) . | nindent 16 }}
+              {{- end }}
+              {{- if .Values.deploy.volumeMounts }}
+              volumeMounts:
+                {{- tpl (toYaml .Values.deploy.volumeMounts) . | nindent 16 }}
+              {{- end }}
+              env:
+                - name: JGROUPS_PING_PROTOCOL
+                  value: dns.DNS_PING
+                - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+                  value: '8888'
+                - name: ENABLE_GENERATE_DEFAULT_DATASOURCE
+                  value: 'false'
+                - name: SERVER_PUBLIC_BIND_ADDRESS
+                  value: 0.0.0.0
+                {{- if .Values.deploy.env }}
+                {{- tpl (toYaml .Values.deploy.env) . | nindent 16 }}
+                {{- end }}
+                {{- if .Values.deploy.envFrom }}
+              envFrom:
+                {{- tpl (toYaml .Values.deploy.envFrom) . | nindent 16 }}
+                {{- end }}
+            {{- if .Values.deploy.extraContainers }}
+            {{- tpl (toYaml .Values.deploy.extraContainers) . | nindent 14 }}
+            {{- end }}
+          {{- if .Values.deploy.volumes }}
+          volumes:
+            {{- tpl (toYaml .Values.deploy.volumes) . | nindent 12 }}
+          {{- end }}
+
+
 
   - kind: Service
     apiVersion: v1

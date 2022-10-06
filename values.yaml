@@ -2,8 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Default replicas to be used for the application pods
-replicaCount: 2
 
 # The managed server builder image to use
 managedServerImage: quay.io/kabirk/wildfly-managed-server-jdk17:latest
@@ -20,4 +18,25 @@ datasourcesFeaturePackGA: org.wildfly:wildfly-datasources-galleon-pack
 datasourcesFeaturePackVersion: 3.0.0.Beta1
 
 deploy:
-  env:
+  replicas: 2
+  tls: {}
+  resources: []
+  livenessProbe:
+    httpGet:
+      path: /health/live
+      port: admin
+  readinessProbe:
+    httpGet:
+      path: /health/ready
+      port: admin
+  startupProbe:
+    httpGet:
+      path: /health/live
+      port: admin
+    initialDelaySeconds: 5
+    failureThreshold: 36
+    periodSeconds: 5
+  env: []
+  envFrom:
+  extraContainers: []
+  volumes: []
