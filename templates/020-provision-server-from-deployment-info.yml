@@ -19,7 +19,7 @@ items:
       tags:
         - from:
             kind: DockerImage
-            name: {{ .Values.managedServerImage }}
+            name: {{ .Values.builder.images.managedServer }}
           generation: null
           importPolicy: { }
           name: latest
@@ -66,17 +66,21 @@ items:
             name: {{ .Release.Name }}-wildfly-managed-server:latest
           env:
             - name: MANAGED_SERVER_SERVER_FEATURE_PACK_GA
-              value: {{ .Values.serverFeaturePackGA }}
+              value: {{ .Values.builder.featurePacks.server.GA }}
             - name: MANAGED_SERVER_SERVER_FEATURE_PACK_VERSION
-              value: {{ .Values.serverFeaturePackVersion }}
+              value: {{ .Values.builder.featurePacks.server.version }}
             - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_GA
-              value: {{ .Values.cloudFeaturePackGA }}
+              value: {{ .Values.builder.featurePacks.cloud.GA }}
             - name: MANAGED_SERVER_CLOUD_FEATURE_PACK_VERSION
-              value: {{ .Values.cloudFeaturePackVersion }}
+              value: {{ .Values.builder.featurePacks.cloud.version }}
             - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_GA
-              value: {{ .Values.datasourcesFeaturePackGA }}
+              value: {{ .Values.builder.featurePacks.datasources.GA }}
             - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_VERSION
-              value: {{ .Values.datasourcesFeaturePackVersion }}
+              value: {{ .Values.builder.featurePacks.datasources.version }}
+            # BASE_IMAGE_LAYERS is set when preparing the base image. We need to unset it here
+            # to perform a normal build
+            - name: BASE_IMAGE_LAYERS
+              value:
         type: Source
       triggers:
         - imageChange:

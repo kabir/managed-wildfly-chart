@@ -18,7 +18,7 @@ items:
       tags:
         - from:
             kind: DockerImage
-            name: {{ .Values.runtimeImage }}
+            name: {{ .Values.builder.images.runtime }}
           generation: null
           importPolicy: { }
           name: latest

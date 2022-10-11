@@ -4,18 +4,23 @@
 
 
 # The managed server builder image to use
-managedServerImage: quay.io/kabirk/wildfly-managed-server-jdk17:latest
 
-# The WildFly runtime inmage
-runtimeImage: quay.io/kabirk/wildfly-runtime-jdk17:latest
-
-# Inputs to the managed server builder image
-serverFeaturePackGA: org.wildfly:wildfly-galleon-pack
-serverFeaturePackVersion: 27.0.0.Alpha5
-cloudFeaturePackGA: org.wildfly.cloud:wildfly-cloud-galleon-pack
-cloudFeaturePackVersion: 2.0.0.Alpha4
-datasourcesFeaturePackGA: org.wildfly:wildfly-datasources-galleon-pack
-datasourcesFeaturePackVersion: 3.0.0.Beta1
+builder:
+  images:
+    managedServer: quay.io/kabirk/wildfly-managed-server-jdk17:latest
+    managedServerBase: quay.io/kabirk/wildfly-managed-server-base-jdk17:latest
+    runtime: quay.io/kabirk/wildfly-runtime-jdk17:latest
+  featurePacks:
+    # Inputs to the managed server builder image
+    server:
+      GA: org.wildfly:wildfly-galleon-pack
+      version: 27.0.0.Alpha5
+    cloud:
+      GA: org.wildfly.cloud:wildfly-cloud-galleon-pack
+      version: 2.0.0.Alpha4
+    datasources:
+      GA: org.wildfly:wildfly-datasources-galleon-pack
+      version: 3.0.0.Beta1
 
 deploy:
   replicas: 2
