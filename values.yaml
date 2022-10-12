@@ -6,9 +6,13 @@
 # The managed server builder image to use
 
 builder:
+  # If mode=populated, we use the managedServerBase image, which has a populated maven repo for faster initial
+  # provisioning. Otherwise, we use the managedServer image, which is 'clean' and so needs to download all maven
+  # artifacts while provisioning the server.
+  mode: clean
   images:
     managedServer: quay.io/kabirk/wildfly-managed-server-jdk17:latest
-    managedServerBase: quay.io/kabirk/wildfly-managed-server-base-jdk17:latest
+    managedServerBase: quay.io/kabirk/wildfly-managed-server-base-image-jdk17:latest
     runtime: quay.io/kabirk/wildfly-runtime-jdk17:latest
   featurePacks:
     # Inputs to the managed server builder image

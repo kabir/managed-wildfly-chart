@@ -19,7 +19,7 @@ items:
       tags:
         - from:
             kind: DockerImage
-            name: {{ .Values.builder.images.managedServer }}
+            name: {{ include "common.wildfly.image.builder" . }}
           generation: null
           importPolicy: { }
           name: latest
@@ -77,8 +77,8 @@ items:
               value: {{ .Values.builder.featurePacks.datasources.GA }}
             - name: MANAGED_SERVER_DATASOURCES_FEATURE_PACK_VERSION
               value: {{ .Values.builder.featurePacks.datasources.version }}
-            # BASE_IMAGE_LAYERS is set when preparing the base image. We need to unset it here
-            # to perform a normal build
+            # BASE_IMAGE_LAYERS is set when preparing the base builder image. We need to unset it here
+            # to perform a normal build. Noop for the empty builder image.
             - name: BASE_IMAGE_LAYERS
               value:
         type: Source
