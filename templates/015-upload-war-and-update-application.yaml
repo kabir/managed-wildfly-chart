@@ -22,15 +22,15 @@ items:
       resources: {}
       source:
         type: Binary
-        binary:
-          asFile: ROOT.war
+        binary: {}
         dockerfile: |-
           # FROM gets overwritten by the dockerStrategy
-          FROM <app-name>-runtime-server:latest        
-          COPY ROOT.war $JBOSS_HOME/standalone/deployments/ROOT.war
+          FROM <app-name>-runtime-server:latest
+          # Copy war (if config files were updated the UI back end should start a new build)
+          COPY *.war $JBOSS_HOME/standalone/deployments/
           # Workaround: For some reason 'COPY -–chown=jboss:root ...' does not work here, so change permissions manually 
           USER root
-          RUN chown jboss:root $JBOSS_HOME/standalone/deployments/ROOT.war
+          RUN chown jboss:root $JBOSS_HOME/standalone/deployments/*.war
           USER jboss
           # Workaround - END
           RUN chmod -R ug+rwX $JBOSS_HOME

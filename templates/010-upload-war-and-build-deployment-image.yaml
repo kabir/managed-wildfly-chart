@@ -49,11 +49,11 @@ items:
       resources: {}
       source:
         type: Binary
-        binary:
-          asFile: ROOT.war
+        binary: {}
         dockerfile: |-
           FROM registry.access.redhat.com/ubi8/ubi-minimal
-          COPY *.war /tmp/artifacts/ROOT.war
+          # Copy war and config files (the wildcards should work and pick out the war files, and the server-config.xml, server-init.yml and server-init.cli files) 
+          COPY *.war server-config.* server-init.* /tmp/artifacts/
       strategy:
         dockerStrategy:
           from:
