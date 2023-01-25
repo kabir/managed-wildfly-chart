@@ -9,6 +9,7 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-ubi-minimal
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:
@@ -29,6 +30,7 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-deployment
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:
@@ -38,6 +40,7 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-deployment-build
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:

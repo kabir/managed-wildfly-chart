@@ -10,6 +10,7 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-wildfly-runtime
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:
@@ -28,6 +29,7 @@ items:
     kind: ImageStream
     metadata:
       name: {{ .Release.Name }}-runtime-server
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:
@@ -37,6 +39,7 @@ items:
     kind: BuildConfig
     metadata:
       name: {{ .Release.Name }}-runtime-build
+      namespace: {{ .Release.Namespace }}
       labels:
         app: {{ .Release.Name }}
     spec:
